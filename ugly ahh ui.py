@@ -4,7 +4,7 @@ from PIL import Image, ImageTk
 import cv2
 import numpy as np
 
-img = Image.open(f"C:/Users/Admaj/Downloads/singals/Signal_Project/shit.jpg")
+img = Image.open(r"C:\Users\small\Desktop\Signals\Project\Signal_Project\b00_i01_a02_20240813_160158_left_0004.jpg")
 
 def brightness_control(img, brightness):
 
