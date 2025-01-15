@@ -16,7 +16,7 @@ class ImageUpdater(QThread):
         while self.running:
             # Example: Generate a new image based on scroll values
             values = [scroll.value() for scroll in self.scroll_bars]
-            image = cv2.imread(r'C:/Users/Admaj/Downloads/singals/Signal_Project/shit.jpg' )  # Replace with dynamic image generation based on values
+            image = cv2.imread(r'E:\Desktop\Signals project\Signal_Project\b00_i01_a02_20240813_160158_left_0004.jpg')  # Replace with dynamic image generation based on values
             image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
             height, width, channel = image.shape
             bytes_per_line = 3 * width

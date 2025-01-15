@@ -25,7 +25,7 @@ def GaussianBlurVariables(direction=1, sigmaX=0):
 def edgeParameters(x=0,y=0):
     return [x,y]
 
-image_path = r'C:/Users/Admaj/Downloads/singals/Signal_Project/shit.jpg'
+image_path = r'C:\Users\small\Desktop\Signals\Project\Signal_Project\b00_i01_a02_20240813_160158_left_0004.jpg'
 image_color = cv2.imread(image_path)
 if image_color is None:
     print("Could not open or find the image")
@@ -33,6 +33,6 @@ if image_color is None:
 image_grey = cv2.cvtColor(image_color, cv2.COLOR_BGR2GRAY)
 cv2.imshow('R', rgb_histogram(image_color)[2])
 cv2.imshow('Grey', image_grey)
-cv2.imshow("Gaussian blur", cv2.GaussianBlur(image_color, GaussianBlurVariables(51)[0], GaussianBlurVariables()[1]))
-cv2.imshow("edges", cv2.Canny(image_grey, edgeParameters(100)[0], edgeParameters(0,100)[1]))
+cv2.imshow("Gaussian blur", cv2.GaussianBlur(image_color, GaussianBlurVariables(25)[0], GaussianBlurVariables()[1]))
+cv2.imshow("edges", cv2.Canny(image_grey, edgeParameters(150)[0], edgeParameters(0,50)[1]))
 cv2.waitKey(0)  
