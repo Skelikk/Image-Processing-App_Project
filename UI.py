@@ -4,6 +4,8 @@ import pandas as pd
 from PyQt6.QtWidgets import QApplication, QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton, QFileDialog, QSlider, QMessageBox, QSizePolicy, QSpacerItem
 from PyQt6.QtGui import QPixmap, QImage
 from PyQt6.QtCore import Qt
+from skimage.feature import hog
+from skimage import exposure
 import cv2
 
 class ScrollImageApp(QWidget):
@@ -21,7 +23,8 @@ class ScrollImageApp(QWidget):
             'g': False,
             'b': False,
             'blur': False,
-            'edge': False
+            'edge': False,
+            'sift': False,
         } #List of filters to be applied to the image with their default values
         self.image_parameters = pd.DataFrame(columns=[
             'Image Name', 'Greyscale', 'Red', 'Green', 'Blue', 'Blur', 'Blur Value', 'Edge Detection', 'Edge Lower Value', 'Edge Upper Value'
@@ -124,6 +127,11 @@ class ScrollImageApp(QWidget):
         self.edge_upper_value_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         parameters_layout.addWidget(self.edge_upper_value_label)
 
+        self.sift_button = QPushButton("SIFT", self)
+        self.sift_button.setCheckable(True)
+        self.sift_button.clicked.connect(lambda: self.toggle_filter('sift'))
+        parameters_layout.addWidget(self.sift_button)
+
         parameters_layout.addSpacerItem(QSpacerItem(20, 40, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding))
 
         button_layout = QHBoxLayout() #Horizontal layout for the buttons
@@ -160,6 +168,16 @@ class ScrollImageApp(QWidget):
         main_layout.addLayout(button_layout) #Add the button layout to the main layout
 
     def toggle_filter(self, filter_name): #Method for toggling the filters
+        if filter_name in ['r','g','b'] and self.filters['greyscale']:
+            self.filters['greyscale'] = False
+            self.greyscale_button.setChecked(False)
+        elif filter_name in ['greyscale'] and any([self.filters['r'], self.filters['g'], self.filters['b']]):
+            self.filters['r'] = False
+            self.filters['g'] = False
+            self.filters['b'] = False
+            self.r_button.setChecked(False)
+            self.g_button.setChecked(False)
+            self.b_button.setChecked(False)
         self.filters[filter_name] = not self.filters[filter_name]
         self.update_image()
 
@@ -199,12 +217,29 @@ class ScrollImageApp(QWidget):
                 image = cv2.GaussianBlur(image, (self.blur_value, self.blur_value), 0)
             if self.filters['edge']:
                 image = cv2.Canny(image, self.edge_lower_value, self.edge_upper_value)
+            if self.filters['sift']:
+                if len(image.shape) == 2:
+                    gray = image
+                else:
+                    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+                sift = cv2.SIFT_create()
+                keypoints, descriptors = sift.detectAndCompute(gray, None)
+                image = cv2.drawKeypoints(image, keypoints, None, flags=cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
             self.display_image(image)
 
     def apply_greyscale(self): #Function for applying the greyscale filter
         if self.image_path:
             image = cv2.imread(self.image_path, cv2.IMREAD_GRAYSCALE)
             self.display_image(image)
+
+    def visualize_sift(self): #SIFT Based on David Lowes paper
+        if self.image_path:
+            image = cv2.imread(self.image_path)
+            gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+            sift = cv2.SIFT_create()
+            keypoints, descriptors = sift.detectAndCompute(gray, None)
+            sift_image = cv2.drawKeypoints(image, keypoints, None, flags=cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
+            self.display_image(sift_image)
 
     def choose_image(self): #Function for choosing an image
         file_dialog = QFileDialog()
