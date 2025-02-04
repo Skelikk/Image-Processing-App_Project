@@ -132,6 +132,45 @@ class ScrollImageApp(QWidget):
         self.sift_button.clicked.connect(lambda: self.toggle_filter('sift'))
         parameters_layout.addWidget(self.sift_button)
 
+        #slider for the sigma value of the sift filter
+        self.sift_sigma_slider = QSlider(Qt.Orientation.Horizontal)
+        self.sift_sigma_slider.setRange(5, 50)
+        self.sift_sigma_slider.setValue(16)
+        self.sift_sigma_value = 1.6
+        self.sift_sigma_slider.valueChanged.connect(self.set_sift_sigma_value)
+        parameters_layout.addWidget(self.sift_sigma_slider)
+
+        #sift sigma label value
+        self.sift_sigma_value_label = QLabel("1.6", self)
+        self.sift_sigma_value_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        parameters_layout.addWidget(self.sift_sigma_value_label)
+
+        #slider for the contrast threshold value of the sift filter
+        self.sift_contrast_threshold_slider = QSlider(Qt.Orientation.Horizontal)
+        self.sift_contrast_threshold_slider.setRange(1, 300)
+        self.sift_contrast_threshold_slider.setValue(40)
+        self.sift_contrast_threshold_value = 0.04
+        self.sift_contrast_threshold_slider.valueChanged.connect(self.set_sift_contrast_threshold_value)
+        parameters_layout.addWidget(self.sift_contrast_threshold_slider)
+
+        #sift contrast_threshold_value label value
+        self.sift_contrast_threshold_value_label = QLabel("0.04", self)
+        self.sift_contrast_threshold_value_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        parameters_layout.addWidget(self.sift_contrast_threshold_value_label)
+
+        #slider for the edge threshold value of the sift filter
+        self.sift_edge_threshold_slider = QSlider(Qt.Orientation.Horizontal)
+        self.sift_edge_threshold_slider.setRange(1000, 10000)
+        self.sift_edge_threshold_slider.setValue(10)
+        self.sift_edge_threshold_value = 1
+        self.sift_edge_threshold_slider.valueChanged.connect(self.set_sift_edge_threshold_value)
+        parameters_layout.addWidget(self.sift_edge_threshold_slider)
+
+        #sift edge_threshold_value label value
+        self.sift_edge_threshold_value_label = QLabel("1", self)
+        self.sift_edge_threshold_value_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        parameters_layout.addWidget(self.sift_edge_threshold_value_label)
+
         parameters_layout.addSpacerItem(QSpacerItem(20, 40, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding))
 
         button_layout = QHBoxLayout() #Horizontal layout for the buttons
@@ -199,6 +238,21 @@ class ScrollImageApp(QWidget):
         self.edge_upper_value_label.setText(str(self.edge_upper_value))
         self.update_image()
 
+    def set_sift_sigma_value(self, value): #Function for setting the value of the upper hysteresis for the edge detection filter
+        self.sift_sigma_value = value/10
+        self.sift_sigma_value_label.setText(str(self.sift_sigma_value))
+        self.update_image()
+
+    def set_sift_contrast_threshold_value(self, value): #Function for setting the value of the upper hysteresis for the edge detection filter
+            self.sift_contrast_threshold_value = value/1000
+            self.sift_contrast_threshold_value_label.setText(str(self.sift_contrast_threshold_value))
+            self.update_image()
+            
+    def set_sift_edge_threshold_value(self, value): #Function for setting the value of the upper hysteresis for the edge detection filter
+            self.sift_edge_threshold_value = value/1000
+            self.sift_edge_threshold_value_label.setText(str(self.sift_edge_threshold_value))
+            self.update_image()
+
     def update_image(self): #Function for updating the image with the selected filters
         if self.image_path:
             image = cv2.imread(self.image_path)
@@ -222,7 +276,9 @@ class ScrollImageApp(QWidget):
                     gray = image
                 else:
                     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-                sift = cv2.SIFT_create()
+                sift = cv2.SIFT_create(sigma = self.sift_sigma_value,
+                                        contrastThreshold = self.sift_contrast_threshold_value,
+                                        edgeThreshold = self.sift_edge_threshold_value)
                 keypoints, descriptors = sift.detectAndCompute(gray, None)
                 image = cv2.drawKeypoints(image, keypoints, None, flags=cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
             self.display_image(image)
