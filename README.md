@@ -2,9 +2,15 @@
 This is a small app made for a project. It can visualise RGB processes, blur, Canny edges and Scale-Invariant-Feature-Transform (SIFT). The parameters for all the functions can be saved in an excel file. The app requires python with libraries as pandas, pyqt6, scikit-image, opencv
 
 
+
+
+
+
+
+
 MIT License
 
-Copyright (c) [year] [fullname]
+Copyright (c) [2025] [Ernest Imiński]
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
